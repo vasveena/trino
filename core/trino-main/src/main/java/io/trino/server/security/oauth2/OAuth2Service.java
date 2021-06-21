@@ -131,7 +131,7 @@ public class OAuth2Service
         // validate access token is trusted by this server
         Claims parsedToken = Jwts.parser()
                 .setSigningKeyResolver(signingKeyResolver)
-                .parseClaimsJws(accessToken.getAccessToken())
+                .parseClaimsJws(accessToken.getIdToken().get()) //Getting just ID token for Google API
                 .getBody();
 
         validateNonce(authId, accessToken, nonce);
@@ -141,7 +141,7 @@ public class OAuth2Service
                 .map(instant -> Ordering.natural().min(instant, parsedToken.getExpiration().toInstant()))
                 .orElse(parsedToken.getExpiration().toInstant());
 
-        return new OAuthResult(authId, accessToken.getAccessToken(), validUntil);
+        return new OAuthResult(authId, accessToken.getIdToken().get(), validUntil); //Getting just ID token for Google API
     }
 
     public Optional<UUID> getAuthId(String state)
